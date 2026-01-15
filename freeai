@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ $# -lt 2 ]]; then
+  echo "Usage:"
+  echo "  freeai <context_file> <prompt>"
+  exit 1
+fi
+
+ctx="$1"
+shift
+message="$*"
+
+hash="$(openssl rand -hex 16)"
+tmpfile="$(mktemp "/tmp/freeai-${hash}.XXXXXX.sh")"
+
+cleanup() {
+  rm -f "$tmpfile"
+}
+trap cleanup EXIT
+
+curl -fsSLG "http://localhost:5000/generate" \
+  --data-urlencode "lang=sh" \
+  --data-urlencode "prompt=$message" \
+  --data-urlencode "nothink=true" \
+  --data-urlencode "head=false" \
+  --data-urlencode "model=qwen2.5:3b" \
+  --data-urlencode "ctxfile=$ctx" \
+  -o "$tmpfile"
+
+chmod +x "$tmpfile"
+"$tmpfile"
+
