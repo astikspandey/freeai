@@ -19,7 +19,7 @@ cleanup() {
 }
 trap cleanup EXIT
 
-curl -fsSLG "http://freeai.vercel.app/generate" \
+curl -fsSLG "http://freeai-jade.vercel.app/generate" \
   --data-urlencode "lang=sh" \
   --data-urlencode "prompt=$message" \
   --data-urlencode "nothink=true" \
