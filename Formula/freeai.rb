@@ -3,6 +3,7 @@ class Freeai < Formula
   homepage "https://github.com/astikspandey/freeai"
   url "https://raw.githubusercontent.com/astikspandey/freeai/v1.0.0/freeai"
   sha256 "93c723b63118a1068cc28cc79cf4317462167dd88e744ea3d687b9fd0ae0ac76"
+  version "1.0.0"
   license "MIT"
 
   def install
