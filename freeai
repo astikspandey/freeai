@@ -1,9 +1,14 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+API_URL="${FREEAI_API_URL:-https://51c5293ab5c4.ngrok-free.app}"
+
 if [[ $# -lt 2 ]]; then
   echo "Usage:"
   echo "  freeai <context_file> <prompt>"
+  echo ""
+  echo "Set API URL with:"
+  echo "  export FREEAI_API_URL=https://your-ngrok-url.ngrok.io"
   exit 1
 fi
 
@@ -11,23 +16,18 @@ ctx="$1"
 shift
 message="$*"
 
-hash="$(openssl rand -hex 16)"
-tmpfile="$(mktemp "/tmp/freeai-${hash}.XXXXXX.sh")"
+# Read context file if it exists
+context_content=""
+if [[ -f "$ctx" ]]; then
+  context_content="$(cat "$ctx" 2>/dev/null)"
+fi
 
-cleanup() {
-  rm -f "$tmpfile"
-}
-trap cleanup EXIT
-
-curl -fsSLG "http://freeai-jade.vercel.app/generate" \
-  --data-urlencode "lang=sh" \
+# Call the API directly
+curl -sG "$API_URL/run" \
   --data-urlencode "prompt=$message" \
   --data-urlencode "nothink=true" \
-  --data-urlencode "head=false" \
   --data-urlencode "model=qwen2.5:3b" \
-  --data-urlencode "ctxfile=$ctx" \
-  -o "$tmpfile"
+  --data-urlencode "context=$context_content"
 
-chmod +x "$tmpfile"
-"$tmpfile"
+echo ""
 
